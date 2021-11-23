@@ -1,205 +1,137 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import *
-from datetime import date
-import sys
-import dbController
+import functools
 
-"""Db = dbController
+from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5.QtCore import *
+from PyQt5.Qt import *
+from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWidgets import QApplication
+from dbController import *
 
-    Connection = Db.create_connection()
-    cursor = Connection.cursor()
-    cursor.execute("show tables;")
-    for db in cursor:
-        print(db)
-    g = GUI.Gui
-    g.gui()"""
+class Ui_MainWindo(object):
+    db = dbController()
+    connection = db.create_connection()
+    cursor = connection.cursor()
+    def setupUi(self, MainWindo):
+        #Главное окно
+        MainWindo.setObjectName("MainWindo")
+        MainWindo.resize(1400, 853)
+        self.centralwidget = QtWidgets.QWidget(MainWindo)
+        self.centralwidget.setObjectName("centralwidget")
 
-Connection = dbController.create_connection()
+        #Боковое меню
+        self.side_menu = QtWidgets.QFrame(self.centralwidget)
+        self.side_menu.setGeometry(QtCore.QRect(10, 30, 150, 821))
+        self.side_menu.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.side_menu.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.side_menu.setObjectName("side_menu")
+        # Кнопки бокового меню
+            # Кнопка таблицы с проектом
+        self.ProjectBaseButton = QtWidgets.QPushButton(self.side_menu)
+        self.ProjectBaseButton.setGeometry(QtCore.QRect(0, 0, 130, 30))
+        self.ProjectBaseButton.pressed.connect(self.ProjectBaseButtonPress)  # Кнопка перехода на таблицу
+            # Кнопка страницы с задачами
+        self.TasksButton = QtWidgets.QPushButton(self.side_menu)
+        self.TasksButton.setGeometry(QtCore.QRect(0, 50, 130, 30))
+        self.TasksButton.pressed.connect(self.SecondButton)
 
-cursor = Connection.cursor()
+        #Список страниц
+        self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
+        self.stackedWidget.setGeometry(QtCore.QRect(160, 0, 1200, 821))
+        self.stackedWidget.setObjectName("stackedWidget")
 
-stylesheet = """
-    QWidget{
-        background-color: white;
-    }
+        #Страница с таблицей базы
+        self.project_base_page = self.ProjectBasePage()
+        self.stackedWidget.addWidget(self.project_base_page)
 
-    QWidget#sideMenuBackground{
-        background-color: #f7f7f7;
-    }
+        self.page_2 = QtWidgets.QWidget()
+        self.page_2.setObjectName("page_2")
+        self.stackedWidget.addWidget(self.page_2)
 
-    QVBoxLayout#sideMenuLayout{
-        background-color: grey;
-    }
+        #self.stackedWidget.addWidget(self.GitWebPage("https://github.com/AntZot/GamedevDB")) #3 страница
 
+        MainWindo.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindo)
+        self.menubar.setEnabled(True)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1120, 26))
+        self.menubar.setNativeMenuBar(True)
+        self.menubar.setObjectName("menubar")
+        MainWindo.setMenuBar(self.menubar)
 
-    QPushButton#sideMenuButton{
-        text-align: left;
-        border: none;
-        background-color: #f7f7f7;
-        max-width: 10em;
-        font: 16px; 
-        padding: 6px;
-    }
+        self.retranslateUi(MainWindo)
+        self.stackedWidget.setCurrentIndex(0)
+        QtCore.QMetaObject.connectSlotsByName(MainWindo)
 
-    QPushButton#sideMenuButton:hover{
-        font: 18px;
-    }
-
-    QLabel#project_base_label{
-        font: 25px;
-
-    }
-
-    QLabel#todays_date_label{
-        font: 11px;
-        color: grey;
-    }
-
-    QPushButton#addTodoEventButton{
-    }
-
-
-"""
-
-
-class MainWindow(QtWidgets.QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("Gamedev project base")
-        self.setGeometry(200, 200, 900, 780)
-        self.initUI()
-
-    def initUI(self):
-
-        self.nextWeekPage = QtWidgets.QLabel()
-
-        backgroundWidget = QtWidgets.QWidget()
-        backgroundWidget.setObjectName("sideMenuBackground")
-        backgroundWidget.setFixedWidth(150)
-
-        layout = QtWidgets.QHBoxLayout()
-        layout.addWidget(backgroundWidget)
-        sideMenuLayout = QtWidgets.QVBoxLayout()
-        sideMenuLayout.setObjectName("sideMenuLayout")
-        self.taskLayout = QtWidgets.QStackedLayout()
-        self.setMainLayout(self.taskLayout)
-
-        backgroundWidget.setLayout(sideMenuLayout)
-        layout.addLayout(self.taskLayout)
-
-        self.setSideMenu(sideMenuLayout)
-        sideMenuLayout.addStretch(0)
-
-        self.setMainLayout(self.taskLayout)
-
-        mainWidget = QtWidgets.QWidget()
-        mainWidget.setLayout(layout)
-
-        self.setCentralWidget(mainWidget)
-
-    def setSideMenu(self, layout):
-        self.todayButton = QtWidgets.QPushButton("Project Base")
-        self.nextWeekButton = QtWidgets.QPushButton("Task list")
-        self.calendarButton = QtWidgets.QPushButton("Calendar")
-        sideMenuButtons = [self.todayButton, self.nextWeekButton, self.calendarButton]
-        for button in sideMenuButtons:
-            button.setObjectName("sideMenuButton")
-            layout.addWidget(button)
-        # Выставление иконок бокового меню
-        """
-        sideMenuButtons[0].setIcon(QtGui.QIcon("today icon.png"))
-        sideMenuButtons[1].setIcon(QtGui.QIcon("week icon.png"))
-        sideMenuButtons[2].setIcon(QtGui.QIcon("calendar icon.png"))
-        """
-        sideMenuButtons[0].pressed.connect(self.ProjectBaseButtonPress)
-        sideMenuButtons[1].pressed.connect(self.nextWeekButtonPress)
-        sideMenuButtons[2].pressed.connect(self.calendarButtonPress)
-
-    def setMainLayout(self, layout):
-        today = self.ProjectBaseWidget()
-        next_week = self.nextWeekWidget()
-        calendar_widget = self.calendarWidget()
-        # if
-        layout.addWidget(today)
-        layout.addWidget(next_week)
-        #layout.addWidget(calendar_widget)
-        self.labels = ["button1", "button2", "button3", "button4", "Button5"]
-        for today_events in self.labels:
-            label = QtWidgets.QLabel(today_events)
-            layout.addWidget(label)
-
-    def ProjectBaseWidget(self):
-        widget = QtWidgets.QWidget(self)
-        """
-        month = date.today().month
-        day = date.today().day
-        today = f"{months[month - 1]}{day}"
-        """
-        #Label property
-        self.project_base = QtWidgets.QLabel("Project base")
-        self.project_base.setObjectName("project_base_label")
-        self.project_base.setAlignment(QtCore.Qt.AlignCenter)
-
-        self.page = QtWidgets.QWidget()
-        self.page.setObjectName("page")
-        self.tableWidget = QtWidgets.QTableWidget(self.page)
-        self.tableWidget.setGeometry(QtCore.QRect(280, 80, 651, 641))
+    def ProjectBasePage(self):
+        page = QtWidgets.QWidget()
+        page.setObjectName("page")
+        self.tableWidget = QtWidgets.QTableWidget(page)
+        self.tableWidget.setGeometry(QtCore.QRect(440, 80, 1000, 641))
         self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(0)
-        self.tableWidget.setRowCount(0)
 
-        self.addTodoEventButton = QtWidgets.QPushButton()
-        #self.addTodoEventButton.setLocale()
-        self.addTodoEventButton.setObjectName("addTodoEventButton")
-        self.addTodoEventButton.setIcon(QtGui.QIcon("add event button.png"))
-        self.addTodoEventButton.setToolTip("Add To Do Event")
+        # Создание полей таблицы
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setColumnWidth(4, 241)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(4)
+        self.tableWidget.setHorizontalHeaderLabels(["Имя проекта", "Состояние","Платформа","Версия","Ссылка на github"])
 
-        """
-        layout.addWidget(self.project_base)
-        layout.addWidget(self.tableWidget)
-        layout.addWidget(self.addTodoEventButton)
-        layout.addStretch(0)
-        """
-        return widget
+        list = self.db.get_project_list()
+        self.tableWidget.setRowCount(len(list))
+        print(list)
+        for i in range(len(list)):
+            for j in range(1,len(list[i])):
+                if j != 5:
+                    self.tableWidget.setItem(i, j-1, QTableWidgetItem(f"{list[i][j]}"))
+                else:
+                    btn = QPushButton(f"{list[i][j].split('/')[len(list[i][j].split('/'))-1]}")
+                    btn.pressed.connect(functools.partial(self.gitButtonPress, [list[i][j],i]))
+                    self.tableWidget.setCellWidget(i, j-1, btn)
 
-    def nextWeekWidget(self):
-        widget = QtWidgets.QWidget(self)
-        layout = QVBoxLayout(widget)
+        self.textBrowser = QtWidgets.QTextBrowser(page)
+        self.textBrowser.setGeometry(QtCore.QRect(10, 80, 256, 51))
+        self.textBrowser.setObjectName("textBrowser")
+        self.pushButton = QtWidgets.QPushButton(page)
+        self.pushButton.setGeometry(QtCore.QRect(90, 160, 93, 28))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(page)
+        self.pushButton_2.setGeometry(QtCore.QRect(540, 760, 93, 28))
+        self.pushButton_2.setObjectName("pushButton_2")
+        #self.pushButton_2.pressed.connect(self.gitButtonPress)
+        return page
 
-        self.today_label = QtWidgets.QLabel("nextdfkv;xcv;xcToday")
-        self.today_label.setObjectName("next_label")
-        layout.addWidget(self.today_label)
-        # setup layout for next week's widget
-        return widget
+    def GitWebPage(self,url):
+        page = QtWidgets.QWidget()
+        page.setObjectName("page_3")
+        web = QWebEngineView(page)
+        web.setGeometry(QtCore.QRect(0, 50, 1250, 800))
+        web.load(QUrl(url))
+        web.show()
+        return page
 
-    def calendarWidget(self):
-        widget = QtWidgets.QWidget(self)
-        layout = QVBoxLayout(widget)
-        # setup layout for calendar widget
-        return widget
+    def gitButtonPress(self,url):
 
-    def addTodoEvent(self):
-        pass
+        self.stackedWidget.addWidget(self.GitWebPage(url[0]))
+        self.stackedWidget.setCurrentIndex(2+url[1])
+        print("gitButtonPress")
 
     def ProjectBaseButtonPress(self):
-        print("today button pressed")
-        self.taskLayout.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(0)
+        print("ProjectBaseButtonPress")
 
-    def nextWeekButtonPress(self):
-        print("Next week button pressed")
-        self.taskLayout.setCurrentIndex(1)
+    def SecondButton(self):
+        self.stackedWidget.setCurrentIndex(1)
+        print("SecondButton")
 
-    def calendarButtonPress(self):
-        print("calendar button pressed")
-        self.taskLayout.setCurrentIndex(2)
-
+    def retranslateUi(self, MainWindo):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindo.setWindowTitle(_translate("MainWindo", "Game Dev Company databases"))
+        self.pushButton.setText(_translate("MainWindo", "PushButton"))
+        self.pushButton_2.setText(_translate("MainWindo", "PushButton"))
 
 def main():
+    import sys
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyleSheet(stylesheet)
-    window = MainWindow()
-    window.show()
-    app.exec_()
+    MainWindo = QtWidgets.QMainWindow()
+    ui = Ui_MainWindo()
+    ui.setupUi(MainWindo)
+    MainWindo.show()
+    sys.exit(app.exec_())
