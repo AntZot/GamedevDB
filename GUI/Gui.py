@@ -14,14 +14,15 @@ class Ui_MainWindo(object):
     def setupUi(self, MainWindo):
         #Главное окно
         MainWindo.setObjectName("MainWindo")
-        MainWindo.resize(1400, 853)
+        MainWindo.resize(1400, 850)
         self.centralwidget = QtWidgets.QWidget(MainWindo)
         self.centralwidget.setObjectName("centralwidget")
 
         #Боковое меню
         self.side_menu = QtWidgets.QFrame(self.centralwidget)
-        self.side_menu.setGeometry(QtCore.QRect(10, 30, 150, 821))
+        self.side_menu.setGeometry(QtCore.QRect(0, 0, 150, 850))
         self.side_menu.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.side_menu.setStyleSheet("background-color: lightgrey")
         self.side_menu.setFrameShadow(QtWidgets.QFrame.Raised)
         self.side_menu.setObjectName("side_menu")
         # Кнопки бокового меню
@@ -33,20 +34,46 @@ class Ui_MainWindo(object):
         self.TasksButton = QtWidgets.QPushButton(self.side_menu)
         self.TasksButton.setGeometry(QtCore.QRect(0, 50, 130, 30))
         self.TasksButton.pressed.connect(self.SecondButton)
+            # Кнопка страницы с настройками
+        self.SettingsButton = QtWidgets.QPushButton(self.side_menu)
+        self.SettingsButton.setGeometry(QtCore.QRect(0, 100, 130, 30))
+        self.SettingsButton.pressed.connect(self.SettingsButtonPress)
+
 
         #Список страниц
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
         self.stackedWidget.setGeometry(QtCore.QRect(160, 0, 1200, 821))
         self.stackedWidget.setObjectName("stackedWidget")
 
-        #Страница с таблицей базы
+        # Страница с таблицей базы
         self.project_base_page = self.ProjectBasePage()
         self.stackedWidget.addWidget(self.project_base_page)
 
+        # Страница тасков
+
         self.page_2 = QtWidgets.QWidget()
         self.page_2.setObjectName("page_2")
+        self.taskbtn = QtWidgets.QPushButton("Task_button", self.page_2)
+        self.taskbtn.setGeometry(QtCore.QRect(90, 160, 93, 28))
+        self.taskbtn.setObjectName("task_page")
         self.stackedWidget.addWidget(self.page_2)
 
+        # Страница с настройками
+        self.settings = self.settingsPage()
+        self.stackedWidget.addWidget(self.settings)
+
+        list = self.db.get_project_list()
+        self.tableWidget.setRowCount(len(list))
+        print(list)
+        for i in range(len(list)):
+            for j in range(1, len(list[i])):
+                if j != 5:
+                    self.tableWidget.setItem(i, j - 1, QTableWidgetItem(f"{list[i][j]}"))
+                else:
+                    btn = QPushButton(f"{list[i][j].split('/')[len(list[i][j].split('/')) - 1]}")
+                    btn.pressed.connect(functools.partial(self.gitButtonPress,i))
+                    self.stackedWidget.addWidget(self.GitWebPage(list[i][j]))
+                    self.tableWidget.setCellWidget(i, j - 1, btn)
         #self.stackedWidget.addWidget(self.GitWebPage("https://github.com/AntZot/GamedevDB")) #3 страница
 
         MainWindo.setCentralWidget(self.centralwidget)
@@ -61,6 +88,11 @@ class Ui_MainWindo(object):
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindo)
 
+    def settingsPage(self):
+        page = QtWidgets.QWidget()
+        page.setObjectName("settings")
+        return page
+
     def ProjectBasePage(self):
         page = QtWidgets.QWidget()
         page.setObjectName("page")
@@ -73,18 +105,6 @@ class Ui_MainWindo(object):
         self.tableWidget.setColumnWidth(4, 241)
         self.tableWidget.horizontalHeader().setSectionResizeMode(4)
         self.tableWidget.setHorizontalHeaderLabels(["Имя проекта", "Состояние","Платформа","Версия","Ссылка на github"])
-
-        list = self.db.get_project_list()
-        self.tableWidget.setRowCount(len(list))
-        print(list)
-        for i in range(len(list)):
-            for j in range(1,len(list[i])):
-                if j != 5:
-                    self.tableWidget.setItem(i, j-1, QTableWidgetItem(f"{list[i][j]}"))
-                else:
-                    btn = QPushButton(f"{list[i][j].split('/')[len(list[i][j].split('/'))-1]}")
-                    btn.pressed.connect(functools.partial(self.gitButtonPress, [list[i][j],i]))
-                    self.tableWidget.setCellWidget(i, j-1, btn)
 
         self.textBrowser = QtWidgets.QTextBrowser(page)
         self.textBrowser.setGeometry(QtCore.QRect(10, 80, 256, 51))
@@ -107,10 +127,14 @@ class Ui_MainWindo(object):
         web.show()
         return page
 
-    def gitButtonPress(self,url):
 
-        self.stackedWidget.addWidget(self.GitWebPage(url[0]))
-        self.stackedWidget.setCurrentIndex(2+url[1])
+    """Блок обработчиков кнопок"""
+    def SettingsButtonPress(self):
+        self.stackedWidget.setCurrentIndex(2)
+        print("SettingsButtonPress")
+
+    def gitButtonPress(self,index):
+        self.stackedWidget.setCurrentIndex(3+index)
         print("gitButtonPress")
 
     def ProjectBaseButtonPress(self):
