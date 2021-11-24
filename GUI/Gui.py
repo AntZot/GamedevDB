@@ -11,20 +11,25 @@ class Ui_MainWindo(object):
     db = dbController()
     connection = db.create_connection()
     cursor = connection.cursor()
+
     def setupUi(self, MainWindo):
-        #Главное окно
+        # Главное окно
         MainWindo.setObjectName("MainWindo")
         MainWindo.resize(1400, 850)
+        print(type(MainWindo))
+        MainWindo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.centralwidget = QtWidgets.QWidget(MainWindo)
         self.centralwidget.setObjectName("centralwidget")
 
-        #Боковое меню
+        # Боковое меню
         self.side_menu = QtWidgets.QFrame(self.centralwidget)
         self.side_menu.setGeometry(QtCore.QRect(0, 0, 150, 850))
         self.side_menu.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.side_menu.setStyleSheet("background-color: lightgrey")
         self.side_menu.setFrameShadow(QtWidgets.QFrame.Raised)
         self.side_menu.setObjectName("side_menu")
+
+        #self.side_menu.resize(self.side_menu.sizeHint())
         # Кнопки бокового меню
             # Кнопка таблицы с проектом
         self.ProjectBaseButton = QtWidgets.QPushButton(self.side_menu)
@@ -42,7 +47,7 @@ class Ui_MainWindo(object):
 
         #Список страниц
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
-        self.stackedWidget.setGeometry(QtCore.QRect(160, 0, 1200, 821))
+        self.stackedWidget.setGeometry(QtCore.QRect(150, 0, 1250, 850))
         self.stackedWidget.setObjectName("stackedWidget")
 
         # Страница с таблицей базы
@@ -74,6 +79,13 @@ class Ui_MainWindo(object):
                     btn.pressed.connect(functools.partial(self.gitButtonPress,i))
                     self.stackedWidget.addWidget(self.GitWebPage(list[i][j]))
                     self.tableWidget.setCellWidget(i, j - 1, btn)
+
+        #Удаление ссылок из кнопки таблицы
+        """for i in range(len(self.stackedWidget),(len(self.stackedWidget)-len(list)),-1):
+            widget = self.stackedWidget.widget(i-1)
+            self.stackedWidget.removeWidget(widget)
+            widget.deleteLater()"""
+
         #self.stackedWidget.addWidget(self.GitWebPage("https://github.com/AntZot/GamedevDB")) #3 страница
 
         MainWindo.setCentralWidget(self.centralwidget)
@@ -120,9 +132,22 @@ class Ui_MainWindo(object):
 
     def GitWebPage(self,url):
         page = QtWidgets.QWidget()
+
+        self.return_back_btn = QtWidgets.QPushButton("Return back", self.side_menu)
+        self.return_back_btn.setGeometry(QtCore.QRect(10, 750, 130, 40))
+        self.return_back_btn.setObjectName("return_back_btn")
+        self.return_back_btn.setStyleSheet("background-color: white; "
+                                           "border-radius: 7px; "
+                                           "font-family: 'Segoe UI', sans-serif; "
+                                           "font-size: 21px; "
+                                           "font-style: bold;")
+        self.return_back_btn.pressed.connect(self.ProjectBaseButtonPress)
+        self.return_back_btn.setVisible(False)
         page.setObjectName("page_3")
+        page.setStyleSheet("background-color: #24292f")
         web = QWebEngineView(page)
-        web.setGeometry(QtCore.QRect(0, 50, 1250, 800))
+        web.setGeometry(QtCore.QRect(0, 0, 1250, 850))
+        web.sizePolicy().horizontalPolicy()
         web.load(QUrl(url))
         web.show()
         return page
@@ -130,18 +155,24 @@ class Ui_MainWindo(object):
 
     """Блок обработчиков кнопок"""
     def SettingsButtonPress(self):
+        self.return_back_btn.setVisible(False)
         self.stackedWidget.setCurrentIndex(2)
         print("SettingsButtonPress")
 
     def gitButtonPress(self,index):
+        self.side_menu.setStyleSheet("background-color: #24292f")
+        self.return_back_btn.setVisible(True)
         self.stackedWidget.setCurrentIndex(3+index)
         print("gitButtonPress")
 
     def ProjectBaseButtonPress(self):
         self.stackedWidget.setCurrentIndex(0)
+        self.return_back_btn.setVisible(False)
+        self.side_menu.setStyleSheet("background-color: lightgrey")
         print("ProjectBaseButtonPress")
 
     def SecondButton(self):
+        self.return_back_btn.setVisible(False)
         self.stackedWidget.setCurrentIndex(1)
         print("SecondButton")
 

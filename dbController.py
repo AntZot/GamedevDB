@@ -20,10 +20,18 @@ class dbController():
 
     def create_database(self):
         self.cursor.close()
-        with open('Resources/DataBase.sql') as f:
+        file = open("Resources/DataBase.sql", 'r')
+        sql_script_string = file.read()
+        file.close()
+        self.cursor.executescript(sql_script_string)
+        self.connection.commit()
+        self.cursor.close()
+        self.connection.close()
+        print('Execute sql script complete.')
+        """with open('Resources/DataBase.sql') as f:
             with self.connection.cursor() as cursor:
                 cursor.execute(f.read(), multi=True)
-            self.connection.commit()
+            self.connection.commit()"""
 
     def add_project(self,platform,project_name,github_url):
         print(f"INSERT INTO project (platform_id,project_name,guthub_url) VALUES ('{platform}','{project_name}','{github_url}') ")
