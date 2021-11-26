@@ -1,5 +1,6 @@
 import functools
-
+import sys
+from GUI.WindowProjectAdd import *
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import *
 from PyQt5.Qt import *
@@ -12,14 +13,20 @@ class Ui_MainWindo(object):
     connection = db.create_connection()
     cursor = connection.cursor()
 
-    def setupUi(self, MainWindo):
+    def setupUi(self, MainWindo,ui):
+        self.ui = ui
         # Главное окно
         MainWindo.setObjectName("MainWindo")
-        MainWindo.resize(1400, 850)
+        MainWindo.resize(1400, 900)
         print(type(MainWindo))
+
         MainWindo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.centralwidget = QtWidgets.QWidget(MainWindo)
         self.centralwidget.setObjectName("centralwidget")
+        self.centralwidget.setEnabled(True)
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        MainWindo.setCentralWidget(self.centralwidget)
 
         # Боковое меню
         self.side_menu = QtWidgets.QFrame(self.centralwidget)
@@ -28,6 +35,9 @@ class Ui_MainWindo(object):
         self.side_menu.setStyleSheet("background-color: lightgrey")
         self.side_menu.setFrameShadow(QtWidgets.QFrame.Raised)
         self.side_menu.setObjectName("side_menu")
+        self.side_menu.setMinimumSize(QtCore.QSize(150, 0))
+        self.gridLayout_3.addWidget(self.side_menu, 0, 0, 1, 1)
+        #self.horizontalLayout_4.addWidget(self.side_menu)
 
         #self.side_menu.resize(self.side_menu.sizeHint())
         # Кнопки бокового меню
@@ -49,6 +59,7 @@ class Ui_MainWindo(object):
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
         self.stackedWidget.setGeometry(QtCore.QRect(150, 0, 1250, 850))
         self.stackedWidget.setObjectName("stackedWidget")
+        self.stackedWidget.setMinimumSize(QtCore.QSize(980, 800))
 
         # Страница с таблицей базы
         self.project_base_page = self.ProjectBasePage()
@@ -86,7 +97,6 @@ class Ui_MainWindo(object):
             self.stackedWidget.removeWidget(widget)
             widget.deleteLater()"""
 
-        #self.stackedWidget.addWidget(self.GitWebPage("https://github.com/AntZot/GamedevDB")) #3 страница
 
         MainWindo.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindo)
@@ -99,6 +109,7 @@ class Ui_MainWindo(object):
         self.retranslateUi(MainWindo)
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindo)
+        self.gridLayout_3.addWidget(self.stackedWidget, 0, 1, 1, 1)
 
     def settingsPage(self):
         page = QtWidgets.QWidget()
@@ -109,7 +120,7 @@ class Ui_MainWindo(object):
         page = QtWidgets.QWidget()
         page.setObjectName("page")
         self.tableWidget = QtWidgets.QTableWidget(page)
-        self.tableWidget.setGeometry(QtCore.QRect(440, 80, 1000, 641))
+        self.tableWidget.setGeometry(QtCore.QRect(440, 80, 762, 641))
         self.tableWidget.setObjectName("tableWidget")
 
         # Создание полей таблицы
@@ -127,22 +138,14 @@ class Ui_MainWindo(object):
         self.pushButton_2 = QtWidgets.QPushButton(page)
         self.pushButton_2.setGeometry(QtCore.QRect(540, 760, 93, 28))
         self.pushButton_2.setObjectName("pushButton_2")
-        #self.pushButton_2.pressed.connect(self.gitButtonPress)
+
+        #self.pushButton_2.pressed.connect(self.openProjectAddWindow)  #Второе окно
         return page
 
     def GitWebPage(self,url):
         page = QtWidgets.QWidget()
-
-        self.return_back_btn = QtWidgets.QPushButton("Return back", self.side_menu)
-        self.return_back_btn.setGeometry(QtCore.QRect(10, 750, 130, 40))
-        self.return_back_btn.setObjectName("return_back_btn")
-        self.return_back_btn.setStyleSheet("background-color: white; "
-                                           "border-radius: 7px; "
-                                           "font-family: 'Segoe UI', sans-serif; "
-                                           "font-size: 21px; "
-                                           "font-style: bold;")
-        self.return_back_btn.pressed.connect(self.ProjectBaseButtonPress)
-        self.return_back_btn.setVisible(False)
+        LayoutGit = QtWidgets.QGridLayout(page)
+        LayoutGit.setObjectName("gridLayout_3")
         page.setObjectName("page_3")
         page.setStyleSheet("background-color: #24292f")
         web = QWebEngineView(page)
@@ -150,29 +153,30 @@ class Ui_MainWindo(object):
         web.sizePolicy().horizontalPolicy()
         web.load(QUrl(url))
         web.show()
+        LayoutGit.addWidget(web)
         return page
 
+    def openProjectAddWindow(self):
+        pass
 
     """Блок обработчиков кнопок"""
     def SettingsButtonPress(self):
-        self.return_back_btn.setVisible(False)
         self.stackedWidget.setCurrentIndex(2)
         print("SettingsButtonPress")
 
     def gitButtonPress(self,index):
+        self.centralwidget.setStyleSheet("background-color: #24292f")
         self.side_menu.setStyleSheet("background-color: #24292f")
-        self.return_back_btn.setVisible(True)
         self.stackedWidget.setCurrentIndex(3+index)
         print("gitButtonPress")
 
     def ProjectBaseButtonPress(self):
         self.stackedWidget.setCurrentIndex(0)
-        self.return_back_btn.setVisible(False)
         self.side_menu.setStyleSheet("background-color: lightgrey")
+        self.centralwidget.setStyleSheet("background-color: midlight")
         print("ProjectBaseButtonPress")
 
     def SecondButton(self):
-        self.return_back_btn.setVisible(False)
         self.stackedWidget.setCurrentIndex(1)
         print("SecondButton")
 
@@ -183,10 +187,9 @@ class Ui_MainWindo(object):
         self.pushButton_2.setText(_translate("MainWindo", "PushButton"))
 
 def main():
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindo = QtWidgets.QMainWindow()
     ui = Ui_MainWindo()
-    ui.setupUi(MainWindo)
+    ui.setupUi(MainWindo,ui)
     MainWindo.show()
     sys.exit(app.exec_())
