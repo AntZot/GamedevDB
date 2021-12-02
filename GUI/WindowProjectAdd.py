@@ -1,10 +1,6 @@
-import GUI.Gui
-from dbController import *
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import *
 from GUI.Gui import *
-from dbController import *
-
+from Controllers.dbController import *
+from PyQt5 import QtWidgets, QtCore
 
 class WindowProjectAdd(QtWidgets.QDialog):
     style = "font-family: 'Segoe UI', sans-serif; font-size: 21px; font-style: bold;"

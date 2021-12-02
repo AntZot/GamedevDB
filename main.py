@@ -1,10 +1,12 @@
-import GUI.GuiController
-from dbController import dbController
+import Controllers.GuiController
+
+from Controllers.dbController import *
 if __name__ == "__main__":
-    gui = GUI.GuiController
+    gui = Controllers.GuiController
     gui.main()
-    #db.get_platform(platform_id = 1)
-    #print(name)"""
+    # db = dbController()
+    # db.create_connection()
+    # db.get_project(*["project_name", "project_id"])
 
 
 

@@ -25,7 +25,7 @@ class dbController():
         return self.connection
 
     def create_database(self):
-        file = open("Resources\gamedev.sql", 'r')
+        file = open("../Resources/gamedev.sql", 'r')
         while True:
             # считываем строку
             sql_script_string = file.readline().strip()
@@ -56,17 +56,39 @@ class dbController():
             if key == 'state_id':
                 request += f",{self.get_state(state = kwargs[key])[0][0]}"
             if key == 'project_version':
-                request += f""
+                request += f",'{kwargs[key]}'"
         request += ")"
         print(request)
         self.cursor.execute(request)
         self.connection.commit()
 
+    def get_project(self, *args):
+        request ="SELECT * FROM project"
+        if args:
+            request += " ORDER BY"
+            for i in range(len(args)):
+                if i != 0:
+                    request += f", {args[i]}"
+                else:
+                    request += f" {args[i]}"
+        print(request)
+        self.cursor.execute(request)
+        return self.cursor.fetchall()
+
     def get_project_list(self):
         self.cursor.execute("SELECT * FROM project")
         return self.cursor.fetchall()
 
-    def add_platform(self,platform_name):
+    def delete_project(self, primary_key=None):
+        request = "DELETE FROM project"
+        if primary_key:
+            request += f" WHERE project_id = {primary_key}"
+        print(request)
+        self.cursor.execute(request)
+        self.connection.commit()
+
+
+    def add_platform(self, platform_name):
         print("INSERT INTO platform (platform) VALUES ('%s') " % platform_name)
         self.cursor.execute("INSERT INTO platform (platform) VALUES ('%s') " % platform_name)
         self.connection.commit()

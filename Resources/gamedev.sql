@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS specification(
 DROP TABLE IF EXISTS project;
 CREATE TABLE IF NOT EXISTS project(
 	project_id INT AUTO_INCREMENT,
-	project_name VARCHAR(50) NOT NULL,
+	project_name VARCHAR(40) NOT NULL,
 	state_id INT,
     platform_id INT NOT NULL,
     project_version VARCHAR(15),
