@@ -51,8 +51,10 @@ class Ui_MainWindo(object):
 
             # Кнопка страницы с настройками
         self.SettingsButton = QtWidgets.QPushButton(self.side_menu)
-        self.SettingsButton.setGeometry(QtCore.QRect(0, 100, 130, 30))
+        self.SettingsButton.setGeometry(QtCore.QRect(0, 100, 170, 30))
         self.SettingsButton.pressed.connect(self.SettingsButtonPress)
+        self.SettingsButton.setText("Настройки")
+        self.SettingsButton.setStyleSheet(self.style + "border: none;")
 
         # Список страниц
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
@@ -157,27 +159,64 @@ class Ui_MainWindo(object):
         connection.close()
 
     def update_main_page(self):
-
         self.project_base_page.update()
 
     def settings_page(self):
         page = QtWidgets.QWidget()
-        page.setObjectName("page")
-        SettingsGrid = QtWidgets.QGridLayout(page)
-        self.stateSettingsBtn = QtWidgets.QPushButton(page)
-        self.stateSettingsBtn.setGeometry(QtCore.QRect(540, 760, 93, 28))
-        self.stateSettingsBtn.setObjectName("pushButton_2")
-        self.stateSettingsBtn.setText("Платформа")
-        SettingsGrid.addWidget(self.stateSettingsBtn, 0, 0, 2, 1)
-        self.stateSettingsBtn2 = QtWidgets.QPushButton(page)
-        self.stateSettingsBtn2.setGeometry(QtCore.QRect(540, 760, 93, 28))
-        self.stateSettingsBtn2.setObjectName("pushButton_2")
-        SettingsGrid.addWidget(self.stateSettingsBtn2, 0, 0, 3, 1)
+        page.setObjectName("page_2")
+        self.settingsLayout = QtWidgets.QWidget(page)
+        self.settingsLayout.setGeometry(QtCore.QRect(0, 0, 1321, 641))
+        self.settingsLayout.setObjectName("gridLayoutWidget")
 
-        SettingsGrid.addWidget(QtWidgets.QPushButton(page), 2, 0, 4, 1)
-        SettingsGrid.addWidget(QtWidgets.QPushButton(page), 3, 0, 5, 1)
-        SettingsGrid.addWidget(QtWidgets.QPushButton(page), 4, 0, 6, 1)
-        SettingsGrid.addWidget(QtWidgets.QPushButton(page), 10, 0, 7, 1)
+        self.gridLayout = QtWidgets.QGridLayout(self.settingsLayout)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setObjectName("gridLayout")
+
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
+        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem1, 2, 1, 1, 1)
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem2, 4, 1, 1, 1)
+        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem3, 6, 1, 1, 1)
+
+        self.stateLabel = QtWidgets.QLabel(self.settingsLayout)
+        self.stateLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.stateLabel.setWordWrap(False)
+        self.stateLabel.setObjectName("label")
+        self.stateLabel.setStyleSheet(self.style)
+        self.stateLabel.setText("Список возможных состояний проекта")
+        self.gridLayout.addWidget(self.stateLabel, 1, 0, 1, 1)
+        self.stateEditButton = QtWidgets.QPushButton(self.settingsLayout)
+        self.stateEditButton.setObjectName("pushButton_6")
+        self.gridLayout.addWidget(self.stateEditButton, 1, 1, 1, 1)
+        self.stateEditButton.setText("PushButton")
+
+        self.label_2 = QtWidgets.QLabel(self.settingsLayout)
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_2.setObjectName("label_2")
+        self.label_2.setStyleSheet(self.style)
+        self.label_2.setText("Платформы")
+        self.gridLayout.addWidget(self.label_2, 3, 0, 1, 1)
+        self.platformEditBtn = QtWidgets.QPushButton(self.settingsLayout)
+        self.platformEditBtn.setObjectName("pushButton_7")
+        self.gridLayout.addWidget(self.platformEditBtn, 3, 1, 1, 1)
+        self.platformEditBtn.setText("PushButton")
+
+        self.pushButton_8 = QtWidgets.QPushButton(self.settingsLayout)
+        self.pushButton_8.setObjectName("pushButton_8")
+        self.gridLayout.addWidget(self.pushButton_8, 5, 1, 1, 1)
+        self.label_3 = QtWidgets.QLabel(self.settingsLayout)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setStyleSheet(self.style)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
+        self.stackedWidget.addWidget(self.page_2)
+        self.gridLayout_3.addWidget(self.stackedWidget, 0, 2, 1, 1)
+        #MainWindo.setCentralWidget(self.centralwidget)
+        self.pushButton_8.setText("PushButton")
+        self.label_3.setText("Добавить отдел")
         return page
 
     def ProjectBasePage(self):
@@ -220,6 +259,8 @@ class Ui_MainWindo(object):
         self.addButton = QtWidgets.QPushButton(page)
         self.addButton.setGeometry(QtCore.QRect(60, 600, 150, 40))
         self.addButton.setObjectName("pushButton_2")
+        self.addButton.setStyleSheet(self.style)
+        self.addButton.setText("Добавить")
         return page
 
     def GitWebPage(self, url):
@@ -241,9 +282,9 @@ class Ui_MainWindo(object):
         if self.sortMenu.currentText() == "Нет":
             self.updateTable(True, 0)
         if self.sortMenu.currentText() == "имени":
-            self.updateTable(True, 0,["project_name", "project_id"])
+            self.updateTable(True, 0, ["project_name", "project_id"])
         if self.sortMenu.currentText() == "состоянию":
-            self.updateTable(True, 0,["state_id", "project_id"])
+            self.updateTable(True, 0, ["state_id", "project_id"])
 
     def delete_project_button_press(self, primary_key):
         connection = self.db.create_connection()
@@ -254,6 +295,7 @@ class Ui_MainWindo(object):
     def SettingsButtonPress(self):
         self.stackedWidget.setCurrentIndex(2)
         self.ProjectBaseButton.setStyleSheet(self.style + "color: rgb(0, 0, 0);" + "border: none;")
+        self.SettingsButton.setStyleSheet(self.style + "color: rgb(0, 0, 0);" + "border: none;")
         self.side_menu.setStyleSheet("background-color: lightgrey")
         self.centralwidget.setStyleSheet("background-color: midlight")
         print("SettingsButtonPress")
@@ -262,6 +304,7 @@ class Ui_MainWindo(object):
         self.centralwidget.setStyleSheet("background-color: #24292f")
         self.side_menu.setStyleSheet("background-color: #24292f")
         self.ProjectBaseButton.setStyleSheet(self.style + "color: rgb(255, 255, 255);" + "border: none;")
+        self.SettingsButton.setStyleSheet(self.style + "color: rgb(255, 255, 255);" + "border: none;")
         self.stackedWidget.setCurrentIndex(3 + index)
         print("gitButtonPress")
 
@@ -270,6 +313,7 @@ class Ui_MainWindo(object):
         self.side_menu.setStyleSheet("background-color: lightgrey")
         self.centralwidget.setStyleSheet("background-color: midlight")
         self.ProjectBaseButton.setStyleSheet(self.style + "color: rgb(0, 0, 0);" + "border: none;")
+        self.SettingsButton.setStyleSheet(self.style + "color: rgb(0, 0, 0);" + "border: none;")
         print("ProjectBaseButtonPress")
 
     def SecondButton(self):

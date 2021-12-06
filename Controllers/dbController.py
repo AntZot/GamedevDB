@@ -25,7 +25,7 @@ class dbController():
         return self.connection
 
     def create_database(self):
-        file = open("../Resources/gamedev.sql", 'r')
+        file = open("Resources/gamedev.sql", 'r')
         while True:
             # считываем строку
             sql_script_string = file.readline().strip()
@@ -87,7 +87,6 @@ class dbController():
         self.cursor.execute(request)
         self.connection.commit()
 
-
     def add_platform(self, platform_name):
         print("INSERT INTO platform (platform) VALUES ('%s') " % platform_name)
         self.cursor.execute("INSERT INTO platform (platform) VALUES ('%s') " % platform_name)
@@ -107,6 +106,14 @@ class dbController():
         self.cursor.execute(request)
         return self.cursor.fetchall()
 
+    def delete_platform(self, platform_name=None):
+        request = "DELETE FROM platform"
+        if platform_name:
+            request += f" WHERE platform = '{platform_name}'"
+        print(request)
+        self.cursor.execute(request)
+        self.connection.commit()
+
     def add_state(self, state):
         print("INSERT INTO state (state) VALUES ('%s') " % state)
         self.cursor.execute("INSERT INTO state (state) VALUES ('%s') " % state)
@@ -125,6 +132,14 @@ class dbController():
 
         self.cursor.execute(request)
         return self.cursor.fetchall()
+
+    def delete_state(self, state_name=None):
+        request = "DELETE FROM state"
+        if state_name:
+            request += f" WHERE state = '{state_name}'"
+        print(request)
+        self.cursor.execute(request)
+        self.connection.commit()
 
     def add_department(self):
         pass

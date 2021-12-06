@@ -1,5 +1,6 @@
 from GUI.Gui import *
 from GUI.WindowProjectAdd import *
+from GUI.SettingsDialog import *
 import sys
 
 class MyWin(QtWidgets.QMainWindow):
@@ -8,6 +9,8 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindo()
         self.ui.setupUi(self)
         self.ui.addButton.clicked.connect(self.AddDialog)
+        self.ui.stateEditButton.pressed.connect(self.StateDialog)
+        self.ui.platformEditBtn.pressed.connect(self.PlatformDialog)
 
     def AddDialog(self):
         dialog = WindowProjectAdd(self)
@@ -15,7 +18,14 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.updateTable(True)
 
     def StateDialog(self):
-        pass
+        dialog = SettingdDialog(self)
+        dialog.setType('state')
+        dialog.exec_()
+
+    def PlatformDialog(self):
+        dialog = SettingdDialog(self)
+        dialog.setType('platform')
+        dialog.exec_()
 
 
 def main():
