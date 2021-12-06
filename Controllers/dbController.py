@@ -75,8 +75,18 @@ class dbController():
         self.cursor.execute(request)
         return self.cursor.fetchall()
 
-    def get_project_list(self):
-        self.cursor.execute("SELECT * FROM project")
+    def project_search(self, **kwargs):
+        request = "SELECT * FROM project WHERE"
+        for key in kwargs.keys():
+            if key == 'project_name':
+                request += f" {key} LIKE '%{kwargs[key]}%'"
+            if key == 'platform_id':
+                request += f" {key} = {kwargs[key]}"
+            if key == 'state_id':
+                request += f" {key} = {kwargs[key]}"
+        #request += ")"
+        print(request)
+        self.cursor.execute(request)
         return self.cursor.fetchall()
 
     def delete_project(self, primary_key=None):

@@ -103,15 +103,13 @@ class Ui_MainWindo(object):
         mode - переменная отвечающая за режимы обновления таблицы. 
         True/False - с/без переопределением кнопок 
     """
-    def updateTable(self, mode, added = 1, sort_list=None):
+    def updateTable(self, mode, added = 1, list=None):
         connection = self.db.create_connection()
 
         self.tableWidget.clear();
         self.tableWidget.setHorizontalHeaderLabels(
             ["Имя проекта", "Состояние", "Платформа", "Версия", "Ссылка на github", "",""])
-        if sort_list:
-            list = self.db.get_project(*sort_list)
-        else:
+        if not list:
             list = self.db.get_project()
 
         if mode:
@@ -244,11 +242,8 @@ class Ui_MainWindo(object):
         self.sortMenu.setGeometry(QtCore.QRect(10, 60, 256, 50))
         self.sortMenu.setObjectName("textBrowser")
         self.sortMenu.setStyleSheet(self.style)
-        self.sortMenu.addItems(["Нет", "имени", "состоянию"])
+        self.sortMenu.addItems(["Нет", "Имени", "Состоянию", "Платформе"])
         self.sortMenu.currentTextChanged.connect(self.update_main_page)
-        # self.searchField = QtWidgets.QPlainTextEdit(page)
-        # self.searchField.setGeometry(QtCore.QRect(10, 70, 256, 51))
-        # self.searchField.setVisible(False)
 
         self.sortButton = QtWidgets.QPushButton(page)
         self.sortButton.setGeometry(QtCore.QRect(60, 120, 150, 40))
@@ -256,6 +251,36 @@ class Ui_MainWindo(object):
         self.sortButton.setText("Сортировать")
         self.sortButton.setStyleSheet(self.style)
         self.sortButton.pressed.connect(self.sort_button_press)
+
+        self.searchLabel = QtWidgets.QLabel(page)
+        self.searchLabel.setGeometry(QtCore.QRect(80, 180, 256, 50))
+        self.searchLabel.setText("Искать по")
+        self.searchLabel.setStyleSheet(self.style)
+
+        self.searchMenu = QtWidgets.QComboBox(page)
+        self.searchMenu.setGeometry(QtCore.QRect(10, 240, 256, 50))
+        self.searchMenu.setObjectName("textBrowser")
+        self.searchMenu.setStyleSheet(self.style)
+        self.searchMenu.addItems(["Нет", "Имени", "Состоянию", "Платформе"])
+        self.searchMenu.currentTextChanged.connect(self.search_menu_selected)
+
+        self.searchField = QtWidgets.QPlainTextEdit(page)
+        self.searchField.setGeometry(QtCore.QRect(10, 300, 256, 41))
+        self.searchField.setStyleSheet(self.style)
+        self.searchField.setVisible(False)
+
+        self.searchMenu2 = QtWidgets.QComboBox(page)
+        self.searchMenu2.setGeometry(QtCore.QRect(10, 300, 256, 41))
+        self.searchMenu2.setStyleSheet(self.style)
+        self.searchMenu2.setVisible(False)
+
+        self.searchButton = QtWidgets.QPushButton(page)
+        self.searchButton.setGeometry(QtCore.QRect(60, 360, 150, 40))
+        self.searchButton.setStyleSheet(self.style)
+        self.searchButton.setText("Искать")
+        self.searchButton.setVisible(False)
+        self.searchButton.pressed.connect(self.search_button_pressed)
+
         self.addButton = QtWidgets.QPushButton(page)
         self.addButton.setGeometry(QtCore.QRect(60, 600, 150, 40))
         self.addButton.setObjectName("pushButton_2")
@@ -279,12 +304,73 @@ class Ui_MainWindo(object):
 
     """Блок обработчиков кнопок"""
     def sort_button_press(self):
+        connection = self.db.create_connection()
         if self.sortMenu.currentText() == "Нет":
             self.updateTable(True, 0)
-        if self.sortMenu.currentText() == "имени":
-            self.updateTable(True, 0, ["project_name", "project_id"])
-        if self.sortMenu.currentText() == "состоянию":
-            self.updateTable(True, 0, ["state_id", "project_id"])
+        if self.sortMenu.currentText() == "Имени":
+            self.updateTable(True, 0, self.db.get_project(*["project_name", "project_id"]))
+        if self.sortMenu.currentText() == "Состоянию":
+            self.updateTable(True, 0, self.db.get_project(*["state_id", "project_id"]))
+        if self.sortMenu.currentText() == "Платформе":
+            self.updateTable(True, 0, self.db.get_project(*["platform_id", "project_id"]))
+        connection.close()
+            # if list:
+            #     list = self.db.get_project(["platform_id", "project_id"])
+            # else:
+            #     list = self.db.get_project()
+
+    def search_menu_selected(self):
+        if self.searchMenu.currentText() == "Нет":
+            self.updateTable(True, 0)
+            self.searchField.setVisible(False)
+            self.searchMenu2.setVisible(False)
+            self.searchButton.setVisible(False)
+        if self.searchMenu.currentText() == "Имени":
+            self.searchField.setVisible(True)
+            self.searchMenu2.setVisible(False)
+            self.searchButton.setVisible(True)
+        if self.searchMenu.currentText() == "Состоянию":
+            connection = self.db.create_connection()
+            self.searchField.setVisible(False)
+            self.searchMenu2.setVisible(True)
+            self.searchButton.setVisible(True)
+            self.searchMenu2.clear()
+            list = self.db.get_state()
+            buf = ['Нет']
+            for i in list:
+                buf.append(i[1])
+            self.searchMenu2.addItems(buf)
+            connection.close()
+        if self.searchMenu.currentText() == "Платформе":
+            connection = self.db.create_connection()
+            self.searchField.setVisible(False)
+            self.searchMenu2.setVisible(True)
+            self.searchButton.setVisible(True)
+            self.searchMenu2.clear()
+            list = self.db.get_platform()
+            buf = ['Нет']
+            for i in list:
+                buf.append(i[1])
+            self.searchMenu2.addItems(buf)
+            connection.close()
+
+    def search_button_pressed(self):
+        connection = self.db.create_connection()
+        if self.searchMenu2.currentText() == "Нет":
+            self.updateTable(True, 0)
+            return
+        if self.searchMenu.currentText() == "Имени":
+            list = self.db.project_search(project_name = self.searchField.toPlainText())
+            self.updateTable(True, 0, list)
+        if self.searchMenu.currentText() == "Состоянию":
+            list = self.db.project_search(
+                state_id=self.db.get_state(state=self.searchMenu2.currentText())[0][0])
+            self.updateTable(True, 0, list)
+        if self.searchMenu.currentText() == "Платформе":
+            list = self.db.project_search(
+                platform_id = self.db.get_platform(platform = self.searchMenu2.currentText())[0][0])
+            self.updateTable(True, 0, list)
+        connection.close()
 
     def delete_project_button_press(self, primary_key):
         connection = self.db.create_connection()
