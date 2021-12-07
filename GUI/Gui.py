@@ -1,10 +1,12 @@
 import functools
+
+import Controllers.GuiController
 from GUI.WindowProjectAdd import *
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.Qt import *
 from PyQt5.QtWebEngineWidgets import *
 from Controllers.dbController import *
-
+from Controllers.GuiController import *
 
 class Ui_MainWindo(object):
     style = "font-family: 'Segoe UI', sans-serif; font-size: 21px; font-style: bold;"
@@ -147,8 +149,7 @@ class Ui_MainWindo(object):
                     btn.setMaximumSize(QtCore.QSize(50, 16777215))
                     btn.setStyleSheet("border: none;")
                     if j == 6:
-                        pass
-                        # btn.pressed.connect(functools.partial(self.gitButtonPress, i))
+                        btn.pressed.connect(functools.partial(Controllers.GuiController.MyWin.ChangeDialog, list[i][0]))
                     else:
                         btn.pressed.connect(functools.partial(self.delete_project_button_press, list[i][0]))
                     self.tableWidget.setCellWidget(i, j-1, btn)

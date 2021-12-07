@@ -12,6 +12,11 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.stateEditButton.pressed.connect(self.StateDialog)
         self.ui.platformEditBtn.pressed.connect(self.PlatformDialog)
 
+
+    def ChangeDialog(PK):
+        print(PK)
+        pass
+
     def AddDialog(self):
         dialog = WindowProjectAdd(self)
         dialog.exec_()
