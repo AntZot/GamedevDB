@@ -1,1 +1,1 @@
-pip install -r conf.txt
+pip install -r Resources/conf.txt
