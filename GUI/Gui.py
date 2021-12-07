@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.Qt import *
 from PyQt5.QtWebEngineWidgets import *
 from Controllers.dbController import *
+from Controllers.GuiController import *
 
 
 class Ui_MainWindo(object):
@@ -11,6 +12,7 @@ class Ui_MainWindo(object):
     db = dbController()
     connection = db.create_connection()
     cursor = connection.cursor()
+    list_len = 0
 
     def setupUi(self, MainWindo):
         # Главное окно
@@ -111,7 +113,7 @@ class Ui_MainWindo(object):
             ["Имя проекта", "Состояние", "Платформа", "Версия", "Ссылка на github", "",""])
         if not list:
             list = self.db.get_project()
-
+        self.list_len = len(list)
         if mode:
             for i in range(len(self.stackedWidget), (len(self.stackedWidget) - len(list) + added), -1):
                 widget = self.stackedWidget.widget(i - 1)
@@ -148,7 +150,7 @@ class Ui_MainWindo(object):
                     btn.setStyleSheet("border: none;")
                     if j == 6:
                         pass
-                        # btn.pressed.connect(functools.partial(self.gitButtonPress, i))
+                        #btn.pressed.connect(functools.partial(, list[i][0]))
                     else:
                         btn.pressed.connect(functools.partial(self.delete_project_button_press, list[i][0]))
                     self.tableWidget.setCellWidget(i, j-1, btn)

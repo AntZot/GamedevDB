@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, QtCore
 class WindowProjectAdd(QtWidgets.QDialog):
     style = "font-family: 'Segoe UI', sans-serif; font-size: 21px; font-style: bold;"
     db = dbController()
-
+    type = ''
     def __init__(self, parent=None):
         super(WindowProjectAdd, self).__init__(parent)
         _translate = QtCore.QCoreApplication.translate
@@ -106,11 +106,34 @@ class WindowProjectAdd(QtWidgets.QDialog):
         self.addBtn.setText(_translate("MainWindow", "Добавить проект"))
         self.addBtn.pressed.connect(self.btnAdd)
 
+        self.ChangeBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.ChangeBtn.setObjectName("addBtn")
+        self.gridLayout.addWidget(self.ChangeBtn, 9, 1, 1, 1)
+        self.ChangeBtn.setText(_translate("MainWindow", "Сохранить изменения"))
+        self.ChangeBtn.pressed.connect(self.btnChange)
+
         self.CancelBtn = QtWidgets.QPushButton(self.centralwidget)
         self.CancelBtn.setObjectName("CancelBtn")
         self.gridLayout.addWidget(self.CancelBtn, 9, 0, 1, 1)
         self.CancelBtn.setText(_translate("MainWindow", "Отмена"))
         self.CancelBtn.pressed.connect(self.btnClose)
+
+    def setType(self, type):
+        self.type = type
+        if self.type == 'Add':
+            self.addBtn.setVisible(True)
+            self.ChangeBtn.setVisible(False)
+        if self.type == 'Change':
+            self.addBtn.setVisible(False)
+            self.ChangeBtn.setVisible(True)
+
+    def change_func(self, PK):
+        connection = self.db.create_connection()
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT * FROM project WHERE project_id = {PK}")
+        list = cursor.fetchall()
+        connection.close()
+        print(list)
 
     def btnAdd(self):
         req = {}
@@ -134,6 +157,9 @@ class WindowProjectAdd(QtWidgets.QDialog):
         connection.close()
         self.close()
         self.deleteLater()
+
+    def btnChange(self):
+        pass
 
     def btnClose(self):
         self.close()
