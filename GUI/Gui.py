@@ -13,6 +13,7 @@ class Ui_MainWindo(object):
     db = dbController()
     connection = db.create_connection()
     cursor = connection.cursor()
+    list_len = 0
 
     def setupUi(self, MainWindo):
         # Главное окно
@@ -113,7 +114,7 @@ class Ui_MainWindo(object):
             ["Имя проекта", "Состояние", "Платформа", "Версия", "Ссылка на github", "",""])
         if not list:
             list = self.db.get_project()
-
+        self.list_len = len(list)
         if mode:
             for i in range(len(self.stackedWidget), (len(self.stackedWidget) - len(list) + added), -1):
                 widget = self.stackedWidget.widget(i - 1)
