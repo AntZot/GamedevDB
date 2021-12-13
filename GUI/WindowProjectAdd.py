@@ -6,6 +6,9 @@ class WindowProjectAdd(QtWidgets.QDialog):
     style = "font-family: 'Segoe UI', sans-serif; font-size: 21px; font-style: bold;"
     db = dbController()
     type = ''
+
+    object_PK = 0
+    object_list = []
     def __init__(self, parent=None):
         super(WindowProjectAdd, self).__init__(parent)
         _translate = QtCore.QCoreApplication.translate
@@ -133,11 +136,16 @@ class WindowProjectAdd(QtWidgets.QDialog):
         cursor.execute(f"SELECT * FROM project WHERE project_id = {PK}")
         list = cursor.fetchall()
         connection.close()
+        self.object_list.append(PK)
+        self.object_PK = PK
         self.setProjectName.setText(list[0][1])
-        self.setPlatform.setCurrentIndex(list[0][3])
+        self.object_list.append(self.setProjectName.toPlainText())
         self.setState.setCurrentIndex(list[0][2])
-        self.setGitUrl.setPlainText(list[0][5])
+        self.object_list.append(self.setState.currentText())
+        self.setPlatform.setCurrentIndex(list[0][3])
+        self.object_list.append(self.setPlatform.currentText())
         self.setVersion.setText(list[0][4])
+        self.setGitUrl.setPlainText(list[0][5])
         print(list)
 
     def btnAdd(self):
@@ -164,24 +172,27 @@ class WindowProjectAdd(QtWidgets.QDialog):
         self.deleteLater()
 
     def btnChange(self):
+        connection = self.db.create_connection()
         req = {}
         name = self.setProjectName.toPlainText()
         platf = self.setPlatform.currentText()
         state = self.setState.currentText()
         giturl = self.setGitUrl.toPlainText()
         vers = self.setVersion.toPlainText()
-        if platf == 'None':
-            print('Error')
-        if name == '':
-            print('Error')
+        if platf != self.object_list[3]:
+            req['platform_id'] = self.db.get_platform(platform=platf)[0][0]
+        if name != self.object_list[1]:
+            req['project_name'] = self.db.get_platform(project_name=platf)[0][0]
         if vers != '':
-            req['project_version'] = vers
+            pass
+            #req['project_version'] = vers
         if state != 'None':
-            req['state_id'] = state
+            pass
+            #req['state_id'] = state
         if giturl != '':
-            req['github_url'] = giturl
-        connection = self.db.create_connection()
-        #self.db.add_project(name, platf, **req)
+            pass
+            #req['github_url'] = giturl
+        self.db.update_project(self.object_PK, **req)
         connection.close()
         self.close()
         self.deleteLater()

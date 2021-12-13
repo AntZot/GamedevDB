@@ -97,6 +97,21 @@ class dbController():
         self.cursor.execute(request)
         self.connection.commit()
 
+    def update_project(self, primary_key, **kwargs):
+        request = "UPDATE project SET"
+        for key in kwargs.keys():
+            if key == 'project_name':
+                request += f"project_name = '{kwargs[key]}'"
+            if key == 'platform_id':
+                request += f" {key} = {kwargs[key]}"
+            if key == 'state_id':
+                request += f" {key} = {kwargs[key]}"
+
+        request += f"WHERE project_id = {primary_key}"
+        print(request)
+        #self.cursor.execute(request)
+        #self.connection.commit()
+
     def add_platform(self, platform_name):
         print("INSERT INTO platform (platform) VALUES ('%s') " % platform_name)
         self.cursor.execute("INSERT INTO platform (platform) VALUES ('%s') " % platform_name)
