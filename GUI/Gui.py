@@ -14,6 +14,7 @@ class Ui_MainWindo(object):
     connection = db.create_connection()
     cursor = connection.cursor()
     list_len = 0
+    g_list=[]
 
     def setupUi(self, MainWindo):
         # Главное окно
@@ -115,6 +116,7 @@ class Ui_MainWindo(object):
         if not list:
             list = self.db.get_project()
         self.list_len = len(list)
+        self.g_list = list
         if mode:
             for i in range(len(self.stackedWidget), (len(self.stackedWidget) - len(list) + added), -1):
                 widget = self.stackedWidget.widget(i - 1)
@@ -150,7 +152,8 @@ class Ui_MainWindo(object):
                     btn.setMaximumSize(QtCore.QSize(50, 16777215))
                     btn.setStyleSheet("border: none;")
                     if j == 6:
-                        btn.pressed.connect(functools.partial(Controllers.GuiController.MyWin.ChangeDialog, list[i][0]))
+                        #btn.pressed.connect(functools.partial(Controllers.GuiController.MyWin, list[i][0]))
+                        pass
                     else:
                         btn.pressed.connect(functools.partial(self.delete_project_button_press, list[i][0]))
                     self.tableWidget.setCellWidget(i, j-1, btn)

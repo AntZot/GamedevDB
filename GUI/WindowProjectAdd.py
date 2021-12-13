@@ -133,6 +133,11 @@ class WindowProjectAdd(QtWidgets.QDialog):
         cursor.execute(f"SELECT * FROM project WHERE project_id = {PK}")
         list = cursor.fetchall()
         connection.close()
+        self.setProjectName.setText(list[0][1])
+        self.setPlatform.setCurrentIndex(list[0][3])
+        self.setState.setCurrentIndex(list[0][2])
+        self.setGitUrl.setPlainText(list[0][5])
+        self.setVersion.setText(list[0][4])
         print(list)
 
     def btnAdd(self):
@@ -159,7 +164,27 @@ class WindowProjectAdd(QtWidgets.QDialog):
         self.deleteLater()
 
     def btnChange(self):
-        pass
+        req = {}
+        name = self.setProjectName.toPlainText()
+        platf = self.setPlatform.currentText()
+        state = self.setState.currentText()
+        giturl = self.setGitUrl.toPlainText()
+        vers = self.setVersion.toPlainText()
+        if platf == 'None':
+            print('Error')
+        if name == '':
+            print('Error')
+        if vers != '':
+            req['project_version'] = vers
+        if state != 'None':
+            req['state_id'] = state
+        if giturl != '':
+            req['github_url'] = giturl
+        connection = self.db.create_connection()
+        #self.db.add_project(name, platf, **req)
+        connection.close()
+        self.close()
+        self.deleteLater()
 
     def btnClose(self):
         self.close()
