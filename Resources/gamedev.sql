@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS project(
 	project_id INT AUTO_INCREMENT,
 	project_name VARCHAR(40) NOT NULL,
 	state_id INT,
-    platform_id INT NOT NULL,
+    platform_id INT,
     project_version VARCHAR(15),
     github_url VARCHAR(100),
     PRIMARY KEY(project_id),
@@ -59,3 +59,14 @@ CREATE TABLE IF NOT EXISTS dep_has_spec(
     FOREIGN KEY (department_id) REFERENCES department (department_id),
     FOREIGN KEY (task_id) REFERENCES specification (task_id)
 );
+-- Триггер для удаления состояний
+DROP TRIGGER IF EXISTS state_BEFORE_DELETE;
+CREATE DEFINER = CURRENT_USER TRIGGER state_BEFORE_DELETE BEFORE DELETE ON state FOR EACH ROW
+BEGIN
+	UPDATE project SET state_id = null WHERE state_id = OLD.state_id;
+END
+-- Триггер для удаления платформы
+DROP TRIGGER IF EXISTS platform_BEFORE_DELETE;
+CREATE DEFINER = CURRENT_USER TRIGGER platform_BEFORE_DELETE BEFORE DELETE ON platform FOR EACH ROW BEGIN
+	DELETE FROM project where platform_id = old.platform_id;
+END

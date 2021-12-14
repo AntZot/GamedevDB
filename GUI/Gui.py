@@ -158,7 +158,7 @@ class Ui_MainWindo(object):
                         btn.pressed.connect(functools.partial(self.delete_project_button_press, list[i][0]))
                     self.tableWidget.setCellWidget(i, j-1, btn)
 
-        self.tableWidget.update();
+        self.tableWidget.update()
         connection.close()
 
     def update_main_page(self):

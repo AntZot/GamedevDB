@@ -32,13 +32,17 @@ class dbController():
             # прерываем цикл, если строка пустая
             if not sql_script_string:
                 break
-
-            if sql_script_string.find(";") == -1:
+            if sql_script_string.find("TRIGGER") != -1:
+                sql_script_string += " " + file.readline().strip()
+                buf =''
+                while buf.find("END") == -1:
+                    buf = file.readline().strip()
+                    sql_script_string += " " + buf
+            elif sql_script_string.find(";") == -1:
                 sql_script_string += " " + file.readline().strip()
                 while sql_script_string.find(";") == -1:
                     sql_script_string += " " + file.readline().strip()
-            else:
-                print(sql_script_string.find(";"))
+                #print(sql_script_string.find(";"))
             self.cursor.execute(sql_script_string)
             self.connection.commit()
         file.close()

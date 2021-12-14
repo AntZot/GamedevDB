@@ -46,7 +46,8 @@ class MyWin(QtWidgets.QMainWindow):
         dialog = WindowProjectAdd(self)
         dialog.setType('Add')
         dialog.exec_()
-        self.ui.updateTable(True, 0, self.list)
+        self.ui.updateTable(True, 1)
+        #self.ui.updateTable(True, 0, self.list)
         self.updateChanged()
 
     def StateDialog(self):
