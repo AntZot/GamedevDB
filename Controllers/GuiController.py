@@ -54,11 +54,13 @@ class MyWin(QtWidgets.QMainWindow):
         dialog = SettingdDialog(self)
         dialog.setType('state')
         dialog.exec_()
+        self.ui.updateTable(False, 0)
 
     def PlatformDialog(self):
         dialog = SettingdDialog(self)
         dialog.setType('platform')
         dialog.exec_()
+        self.ui.updateTable(False, 0)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

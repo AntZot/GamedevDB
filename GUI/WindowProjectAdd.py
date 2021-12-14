@@ -140,7 +140,8 @@ class WindowProjectAdd(QtWidgets.QDialog):
         self.object_PK = PK
         self.setProjectName.setText(list[0][1])
         self.object_list.append(self.setProjectName.toPlainText())
-        self.setState.setCurrentIndex(list[0][2])
+        if list[0][2] is not None:
+            self.setState.setCurrentIndex(list[0][2])
         self.object_list.append(self.setState.currentText())
         self.setPlatform.setCurrentIndex(list[0][3])
         self.object_list.append(self.setPlatform.currentText())
