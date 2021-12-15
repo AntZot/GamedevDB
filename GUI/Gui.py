@@ -52,6 +52,7 @@ class Ui_MainWindo(object):
         self.TasksButton = QtWidgets.QPushButton(self.side_menu)
         self.TasksButton.setGeometry(QtCore.QRect(0, 50, 130, 30))
         self.TasksButton.pressed.connect(self.SecondButton)
+        self.TasksButton.setStyleSheet(self.style + "border: none;")
 
             # Кнопка страницы с настройками
         self.SettingsButton = QtWidgets.QPushButton(self.side_menu)
@@ -207,19 +208,19 @@ class Ui_MainWindo(object):
         self.gridLayout.addWidget(self.platformEditBtn, 3, 1, 1, 1)
         self.platformEditBtn.setText("PushButton")
 
-        self.pushButton_8 = QtWidgets.QPushButton(self.settingsLayout)
-        self.pushButton_8.setObjectName("pushButton_8")
-        self.gridLayout.addWidget(self.pushButton_8, 5, 1, 1, 1)
-        self.label_3 = QtWidgets.QLabel(self.settingsLayout)
-        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_3.setStyleSheet(self.style)
-        self.label_3.setObjectName("label_3")
-        self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
-        self.stackedWidget.addWidget(self.page_2)
-        self.gridLayout_3.addWidget(self.stackedWidget, 0, 2, 1, 1)
-        #MainWindo.setCentralWidget(self.centralwidget)
-        self.pushButton_8.setText("PushButton")
-        self.label_3.setText("Добавить отдел")
+        # self.pushButton_8 = QtWidgets.QPushButton(self.settingsLayout)
+        #         # self.pushButton_8.setObjectName("pushButton_8")
+        #         # self.gridLayout.addWidget(self.pushButton_8, 5, 1, 1, 1)
+        #         # self.label_3 = QtWidgets.QLabel(self.settingsLayout)
+        #         # self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        #         # self.label_3.setStyleSheet(self.style)
+        #         # self.label_3.setObjectName("label_3")
+        #         # self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
+        #         # self.stackedWidget.addWidget(self.page_2)
+        #         # self.gridLayout_3.addWidget(self.stackedWidget, 0, 2, 1, 1)
+        #         # #MainWindo.setCentralWidget(self.centralwidget)
+        #         # self.pushButton_8.setText("PushButton")
+        #         # self.label_3.setText("Добавить отдел")
         return page
 
     def ProjectBasePage(self):
@@ -232,6 +233,7 @@ class Ui_MainWindo(object):
         # Создание полей таблицы
         self.tableWidget.setColumnCount(7)
         self.tableWidget.setColumnWidth(0, 280)
+        self.tableWidget.setColumnWidth(2, 154)
         self.tableWidget.setColumnWidth(3, 150)
         self.tableWidget.setColumnWidth(4, 240)
         self.tableWidget.setColumnWidth(5, 50)

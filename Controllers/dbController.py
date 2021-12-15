@@ -9,7 +9,7 @@ class dbController():
             self.connection = mysql.connector.connect(
                 host='localhost',
                 user='root',
-                passwd='azot'
+                passwd='1111'
             )
             print("Connection to MySQL DB successful")
         except Error as e:
@@ -102,19 +102,29 @@ class dbController():
         self.connection.commit()
 
     def update_project(self, primary_key, **kwargs):
+        count = 0
         request = "UPDATE project SET"
         for key in kwargs.keys():
+            if count >= 1:
+                request += ", "
+            else:
+                request += " "
+                count += 1
             if key == 'project_name':
                 request += f"project_name = '{kwargs[key]}'"
             if key == 'platform_id':
-                request += f" {key} = {kwargs[key]}"
+                request += f"platform_id = '{kwargs[key]}'"
             if key == 'state_id':
-                request += f" {key} = {kwargs[key]}"
+                request += f"state_id = '{kwargs[key]}'"
+            if key == 'project_version':
+                request += f"project_version = '{kwargs[key]}'"
+            if key == 'github_url':
+                request += f"github_url = '{kwargs[key]}'"
 
-        request += f"WHERE project_id = {primary_key}"
+        request += f" WHERE project_id = {primary_key}"
         print(request)
-        #self.cursor.execute(request)
-        #self.connection.commit()
+        self.cursor.execute(request)
+        self.connection.commit()
 
     def add_platform(self, platform_name):
         print("INSERT INTO platform (platform) VALUES ('%s') " % platform_name)

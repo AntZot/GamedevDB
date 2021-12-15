@@ -24,8 +24,9 @@ class MyWin(QtWidgets.QMainWindow):
         dialog.setType('Change')
         dialog.change_func(PK)
         dialog.exec_()
-        self.ui.updateTable(True, 0, self.list)
+        self.ui.updateTable(True, 0)
         self.updateChanged()
+        dialog.object_list.clear()
         #print(PK)
 
     def updateChanged(self):

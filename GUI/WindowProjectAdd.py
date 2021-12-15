@@ -146,8 +146,10 @@ class WindowProjectAdd(QtWidgets.QDialog):
         self.setPlatform.setCurrentIndex(list[0][3])
         self.object_list.append(self.setPlatform.currentText())
         self.setVersion.setText(list[0][4])
+        self.object_list.append(self.setVersion.toPlainText())
         self.setGitUrl.setPlainText(list[0][5])
-        print(list)
+        self.object_list.append(self.setGitUrl.toPlainText())
+        print(self.object_list)
 
     def btnAdd(self):
         req = {}
@@ -178,21 +180,19 @@ class WindowProjectAdd(QtWidgets.QDialog):
         name = self.setProjectName.toPlainText()
         platf = self.setPlatform.currentText()
         state = self.setState.currentText()
+        print(state)
         giturl = self.setGitUrl.toPlainText()
         vers = self.setVersion.toPlainText()
         if platf != self.object_list[3]:
             req['platform_id'] = self.db.get_platform(platform=platf)[0][0]
         if name != self.object_list[1]:
-            req['project_name'] = self.db.get_platform(project_name=platf)[0][0]
-        if vers != '':
-            pass
-            #req['project_version'] = vers
-        if state != 'None':
-            pass
-            #req['state_id'] = state
-        if giturl != '':
-            pass
-            #req['github_url'] = giturl
+            req['project_name'] = name
+        if vers != self.object_list[4]:
+            req['project_version'] = vers
+        if state != self.object_list[2]:
+            req['state_id'] = self.db.get_state(state=state)[0][0]
+        if giturl != self.object_list[5]:
+            req['github_url'] = giturl
         self.db.update_project(self.object_PK, **req)
         connection.close()
         self.close()
